@@ -6,7 +6,7 @@ void ana_driver(bool use_amplitude = true){
     gStyle->SetOptFit(1111); // set option to display fit parameters on plot
 
     
-    // Gain = 2, amplitude, gauss
+    // Gain = 2, amplitude, gauss, SiPM measurement
     std::string fname_g2a = "./Test_crs/F1--phe-g2--00000.txt";
     int n_points_gauss_g2a = 3;
     int n_points_linear_fit_g2a = 3;
@@ -20,7 +20,7 @@ void ana_driver(bool use_amplitude = true){
         convert_to_phe = 1/fit_vals_g2a[1];
     }
     else{
-        // Gain = 40, amplitude, gauss
+        // Gain = 40, amplitude, gauss, SiPM measurement
         std::string fname_g40a = "./Test_crs/F1--phe-g40--00000.txt";
         int n_points_gauss_g40a = 3;
         int n_points_linear_fit_g40a = 2;
@@ -29,7 +29,7 @@ void ana_driver(bool use_amplitude = true){
         std::array<double, 2> fit_vals_g40a = ana_fit(fname_g40a, gaussian_fit_params_g40a, n_points_gauss_g40a, n_points_linear_fit_g40a, gaussian_function_range_g40a, false);
         std::cout << "gain = 40, linear fit vals: (" << fit_vals_g40a[0] << ", " << fit_vals_g40a[1] << std::endl;
         
-        // Gain = 40, charge, gauss
+        // Gain = 40, charge, gauss, SiPM measurement
         std::string fname_g40c = "./Test_crs/F2--phe-g40--00000.txt";
         int n_points_gauss_g40c = 3;
         int n_points_linear_fit_g40c = 3;
@@ -40,7 +40,8 @@ void ana_driver(bool use_amplitude = true){
         // Converts from Wb to Phe
         convert_to_phe = 1/(fit_vals_g40c[1]*fit_vals_g2a[1]/fit_vals_g40a[1]);
         // double Q_to_phe = -1/3e-11;
-    }
+    } 
+
     std::string fname_large;
     std::string fname_middle;
     std::string fname_small;

@@ -3,6 +3,7 @@
 #include "ana_plot.C"
 
 void ana_driver(bool use_amplitude = true){
+    gStyle->SetOptFit(1111); // set option to display fit parameters on plot
 
     
     // Gain = 2, amplitude, gauss
@@ -44,56 +45,68 @@ void ana_driver(bool use_amplitude = true){
     std::string fname_middle;
     std::string fname_small;
     std::string fname_15;
+    std::string fname_6;
     std::array<double,4> landau_params_large;
     std::array<double,4> landau_params_middle;
     std::array<double,4> landau_params_small;
     std::array<double,4> landau_params_15;
+    std::array<double,4> landau_params_6;
     std::array<double,2> langau_function_range_large;
     std::array<double,2> langau_function_range_middle;
     std::array<double,2> langau_function_range_small;
     std::array<double,2> langau_function_range_15;
+    std::array<double,2> langau_function_range_6;
     std::array<double,2> landau_shift_range_large;
     std::array<double,2> landau_shift_range_middle;
     std::array<double,2> landau_shift_range_small;
     std::array<double,2> landau_shift_range_15;
+    std::array<double,2> landau_shift_range_6;
     if(use_amplitude){
         fname_large = "./Test_crs/F1--large-end--00000.txt";
         fname_middle = "./Test_crs/Middle_cosmics/F1--mid--00000.txt";
         fname_small = "./Test_crs/small/F1--small--00000.txt";
         fname_15 = "./Test_crs/15cm/F1--15cm--00000.txt";
+        fname_6 = "./Test_crs/6cm/F1--6cm--00000.txt";
         landau_params_large = {30, 400, 5000, 30}; 
         landau_params_middle = {50, 350, 5000, 50}; 
-        landau_params_small = {450, 890, 25000, 450}; 
+        landau_params_small = {20, 225, 3000, 20}; 
         landau_params_15 = {17, 212, 3000, 47};
+        landau_params_6 = {17, 212, 3000, 47};
         langau_function_range_large = {250, 800};
         langau_function_range_middle = {200, 700};
         langau_function_range_small =  {115, 500};
         langau_function_range_15 =  {128, 490};
+        langau_function_range_6 =  {128, 1200};
         landau_shift_range_large = {10,20};
         landau_shift_range_middle = {1,10};
         landau_shift_range_small = {2, 7};
         landau_shift_range_15 = {2.5, 10};
+        landau_shift_range_6 = {2, 20};
     }
     else{
         fname_large = "./Test_crs/F2--large-end--00000.txt";
         fname_middle = "./Test_crs/Middle_cosmics/F2--mid--00000.txt";
         fname_small = "./Test_crs/small/F2--small--00000.txt";
         fname_15 = "./Test_crs/15cm/F2--15cm--00000.txt";
+        fname_6 = "./Test_crs/6cm/F2--6cm--00000.txt";
         landau_params_large = {200, 1174, 30000, 200}; 
         landau_params_middle = {450, 890, 25000, 450}; 
         landau_params_small = {450, 890, 25000, 450};
-        landau_params_15 = {450, 890, 25000, 450};
+        landau_params_15 = {100, 890, 15000, 100};
+        landau_params_6 = {64, 1100, 54000, 150};
         langau_function_range_large = {0, 2000};
         langau_function_range_middle = {400, 2500};
         langau_function_range_small =  {400, 1700};
         langau_function_range_15 =  {100, 1700};
+        langau_function_range_6 =  {500, 3000};
         landau_shift_range_large = {-350,0};
         landau_shift_range_middle = {-275,-150};
         landau_shift_range_small = {-250,-220};
         landau_shift_range_15 = {-730,-325};
+        landau_shift_range_6 = {-625, -525};
     }
     // First line x_values = distance from SiPM
-    std::vector<double> x_values = {3.5,9,20,15};
+    std::vector<double> x_values = {3.5,9,20,15, 6};
 
     // Gain = 2, large, charge, landau
     std::string plot_name_large = "Large";
@@ -115,6 +128,11 @@ void ana_driver(bool use_amplitude = true){
     std::string histo_title_15 = Form("Number of Phe at X = %f cm;# Photo Electrons;Counts", x_values[3]);
     landau_fit_result fit_vals_15 = ana_landau(fname_15, convert_to_phe, landau_params_15, langau_function_range_15, landau_shift_range_15, plot_name_15, histo_title_15, true, 4);
 
+    // Gain = 2, 6cm, charge, landau
+    std::string plot_name_6 = "6";
+    std::string histo_title_6 = Form("Number of Phe at X = %f cm;# Photo Electrons;Counts", x_values[4]);
+    landau_fit_result fit_vals_6 = ana_landau(fname_6, convert_to_phe, landau_params_6, langau_function_range_6, landau_shift_range_6, plot_name_6, histo_title_6, true);
+
 
     // Converts from Phe to Phe/MeV
     double density = 7.12; // g/cm3
@@ -122,8 +140,8 @@ void ana_driver(bool use_amplitude = true){
     double energy_per_cm = density * energy_dep_per_gram_per_cm2;
 
     // Second line penetration_depths is the thickness of scintillator
-    std::vector<landau_fit_result> landau_fit_result_vector = {fit_vals_large,fit_vals_middle, fit_vals_small, fit_vals_15}; // landau fit result information
-    std::vector<double> penetration_depths = {5.4, 4.2, 2.5, 3.5};
+    std::vector<landau_fit_result> landau_fit_result_vector = {fit_vals_large,fit_vals_middle, fit_vals_small, fit_vals_15, fit_vals_6}; // landau fit result information
+    std::vector<double> penetration_depths = {5.4, 4.2, 2.5, 3.5, 4.5};
 
 
     plot_MPVs(energy_per_cm, x_values, landau_fit_result_vector, penetration_depths, use_amplitude); // E/cm, x_arr, y_arr, depth_arr

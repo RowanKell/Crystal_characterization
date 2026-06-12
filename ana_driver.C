@@ -2,7 +2,7 @@
 #include "ana_fit.C"
 #include "ana_plot.C"
 
-void ana_driver(bool use_amplitude = true){
+void ana_driver(bool use_amplitude = false){
     gStyle->SetOptFit(1111); // set option to display fit parameters on plot
 
     
@@ -39,6 +39,9 @@ void ana_driver(bool use_amplitude = true){
         
         // Converts from Wb to Phe
         convert_to_phe = 1/(fit_vals_g40c[1]*fit_vals_g2a[1]/fit_vals_g40a[1]);
+
+        double gain_40_real_gain = 2 * fit_vals_g40a[1] / fit_vals_g2a[1];
+        std::cout << "Gain40 real gain: " << gain_40_real_gain << "\n";
         // double Q_to_phe = -1/3e-11;
     }
     std::string fname_large;
@@ -106,7 +109,19 @@ void ana_driver(bool use_amplitude = true){
         landau_shift_range_6 = {-625, -525};
     }
     // First line x_values = distance from SiPM
+    double x_hyp = 25.25;
+    double x_adj = 25.15;
+    double x_ruler_err = 0.1;
+    double angle_diff = 2 * TMath::ACos(x_adj/x_hyp);
+    double cos_angle = TMath::Cos(angle_diff);
     std::vector<double> x_values = {3.5,9,20,15, 6};
+    std::vector<double> x_err;
+    for(int i = 0; i < x_values.size(); i++){
+        double x_measured = x_values[i];
+        double x_real = cos_angle * x_values[i];
+        double x_angle_err = abs(x_real - x_measured);
+        x_err.push_back(pow(x_angle_err * x_angle_err + x_ruler_err * x_ruler_err,0.5));
+    }
 
     // Gain = 2, large, charge, landau
     std::string plot_name_large = "Large";
@@ -144,6 +159,6 @@ void ana_driver(bool use_amplitude = true){
     std::vector<double> penetration_depths = {5.4, 4.2, 2.5, 3.5, 4.5};
 
 
-    plot_MPVs(energy_per_cm, x_values, landau_fit_result_vector, penetration_depths, use_amplitude); // E/cm, x_arr, y_arr, depth_arr
+    plot_MPVs(energy_per_cm, x_values, x_err, landau_fit_result_vector, penetration_depths, use_amplitude); // E/cm, x_arr, y_arr, depth_arr
     
 }

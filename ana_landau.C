@@ -70,7 +70,6 @@ struct landau_fit_result{
 };
 
 landau_fit_result ana_landau(std::string fname, double Q_to_phe, std::array<double,4> parameters, std::array<double,2> langau_function_range, std::array<double,2> shift_range, std::string plot_name, std::string h_title, bool do_fit = true, int rebin_value = -1){
-  gStyle->SetOptFit(1111); // set option to display fit parameters on plot
   
   fstream ifile(fname);
   double xmin = 1e20, xmax = -1e20, delta; 
